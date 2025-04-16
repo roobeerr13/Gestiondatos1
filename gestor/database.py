@@ -1,6 +1,5 @@
-# gestor/database.py
 import csv
-import gestor.config as config  # Cambiado a importación absoluta
+import gestor.config as config
 
 class Cliente:
     def __init__(self, dni, nombre, apellido):
@@ -8,12 +7,15 @@ class Cliente:
         self.nombre = nombre
         self.apellido = apellido
 
+    def __str__(self):
+        return f"({self.dni}) {self.nombre} {self.apellido}"
+
 class Clientes:
     lista_clientes = []
 
     @classmethod
     def cargar(cls):
-        cls.lista_clientes.clear()  # Limpiar la lista antes de cargar
+        cls.lista_clientes.clear()
         try:
             with open(config.DATABASE_PATH, newline="\n") as fichero:
                 reader = csv.reader(fichero, delimiter=";")
@@ -65,3 +67,6 @@ class Clientes:
 
     def __init__(self):
         self.cargar()
+
+# Cargar los clientes al importar el módulo
+Clientes.cargar()
