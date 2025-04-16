@@ -1,6 +1,6 @@
 # gestor/database.py
 import csv
-from . import config  # Cambiado de "import config" a "from . import config"
+import gestor.config as config  # Cambiado a importación absoluta
 
 class Cliente:
     def __init__(self, dni, nombre, apellido):

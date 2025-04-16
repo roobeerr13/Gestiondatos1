@@ -3,11 +3,10 @@ import copy
 import unittest
 import csv
 import os
-from . import config
-from . import database as db  # Cambiado a importación relativa
-from . import helpers  # Cambiado a importación relativa
+import gestor.config as config  # Cambiado a importación absoluta
+import gestor.database as db    # Cambiado a importación absoluta
+import gestor.helpers as helpers  # Cambiado a importación absoluta
 
-# El resto del código permanece igual
 class TestDatabase(unittest.TestCase):
     def setUp(self):
         # Configurar la ruta del archivo temporal para los tests
