@@ -26,9 +26,13 @@ def validar_dni(dni, lista):
         return False, "DNI inválido o ya existe. Debe tener el formato: 2 dígitos + 1 letra (ej. 12A) y no estar registrado."
     return True, ""
 
+import re
+
 def validar_texto(texto, campo, min_len=2, max_len=30):
-    if not texto.isalpha() or len(texto) < min_len or len(texto) > max_len:
-        return False, f"{campo} debe tener solo letras y entre {min_len} y {max_len} caracteres."
+    # Allow letters (including accented) and spaces
+    pattern = r'^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$'
+    if not re.match(pattern, texto) or len(texto) < min_len or len(texto) > max_len:
+        return False, f"{campo} debe tener solo letras y espacios, y entre {min_len} y {max_len} caracteres."
     return True, ""
 
 def añadir_cliente(dni, nombre, apellido):
