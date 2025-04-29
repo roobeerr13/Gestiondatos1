@@ -1,5 +1,5 @@
 import csv
-import config  # Importar la configuración
+import gestor.config as config
 
 class Cliente:
     def __init__(self, dni, nombre, apellido):
@@ -8,45 +8,65 @@ class Cliente:
         self.apellido = apellido
 
     def __str__(self):
-        return f"({self.dni}, {self.nombre}, {self.apellido})"
+        return f"({self.dni}) {self.nombre} {self.apellido}"
 
 class Clientes:
-    def __init__(self):
-        self.lista_clientes = []
-        with open(config.DATABASE_PATH, newline="\n") as fichero:  # Usar DATABASE_PATH
-            reader = csv.reader(fichero, delimiter=";")
-            for dni, nombre, apellido in reader:
-                cliente = Cliente(dni, nombre, apellido)
-                self.lista_clientes.append(cliente)
+    lista_clientes = []
 
-    def guardar(self):
-        with open(config.DATABASE_PATH, "w", newline="\n") as fichero:  # Usar DATABASE_PATH
+    @classmethod
+    def cargar(cls):
+        cls.lista_clientes.clear()
+        try:
+            with open(config.DATABASE_PATH, newline="\n") as fichero:
+                reader = csv.reader(fichero, delimiter=";")
+                for dni, nombre, apellido in reader:
+                    cliente = Cliente(dni, nombre, apellido)
+                    cls.lista_clientes.append(cliente)
+        except FileNotFoundError:
+            cls.lista_clientes = []
+
+    @classmethod
+    def guardar(cls):
+        with open(config.DATABASE_PATH, "w", newline="\n") as fichero:
             writer = csv.writer(fichero, delimiter=";")
-            for c in self.lista_clientes:
+            for c in cls.lista_clientes:
                 writer.writerow((c.dni, c.nombre, c.apellido))
 
-    def buscar(self, dni):
-        for cliente in self.lista_clientes:
+    @classmethod
+    def buscar(cls, dni):
+        for cliente in cls.lista_clientes:
             if cliente.dni == dni:
                 return cliente
+        return None
 
-    def crear(self, dni, nombre, apellido):
+    @classmethod
+    def crear(cls, dni, nombre, apellido):
         cliente = Cliente(dni, nombre, apellido)
-        self.lista_clientes.append(cliente)
-        self.guardar()
+        cls.lista_clientes.append(cliente)
+        cls.guardar()
         return cliente
 
-    def modificar(self, dni, nombre, apellido):
-        for i, cliente in enumerate(self.lista_clientes):
+    @classmethod
+    def modificar(cls, dni, nombre, apellido):
+        for i, cliente in enumerate(cls.lista_clientes):
             if cliente.dni == dni:
-                self.lista_clientes[i].nombre = nombre
-                self.lista_clientes[i].apellido = apellido
-                self.guardar()
-                return self.lista_clientes[i]
+                cls.lista_clientes[i].nombre = nombre
+                cls.lista_clientes[i].apellido = apellido
+                cls.guardar()
+                return cls.lista_clientes[i]
+        return None
 
-    def borrar(self, dni):
-        for i, cliente in enumerate(self.lista_clientes):
+    @classmethod
+    def borrar(cls, dni):
+        for i, cliente in enumerate(cls.lista_clientes):
             if cliente.dni == dni:
-                cliente = self.lista_clientes.pop(i)
-                self.guardar()
+                cliente = cls.lista_clientes.pop(i)
+                cls.guardar()
                 return cliente
+        return None
+
+    def __init__(self):
+        self.cargar()
+
+# Cargar los clientes al importar el módulo
+Clientes.cargar()
